@@ -1,0 +1,12 @@
+---
+title: Build Time Heavy, Runtime Zero
+description: Notes on CloudStatic's static-first architecture rule.
+date: 2026-05-13
+tags:
+  - architecture
+  - static
+---
+
+CloudStatic does content rendering during build.
+
+Runtime stays static: Cloudflare Edge serves HTML, CSS, JavaScript, JSON, and images directly.

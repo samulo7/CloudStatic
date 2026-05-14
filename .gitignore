@@ -1,0 +1,7 @@
+node_modules/
+dist/
+.astro/
+.env
+.env.*
+content-assets/incoming-images/
+content-assets/processed-images/

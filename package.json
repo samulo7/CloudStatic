@@ -1,0 +1,25 @@
+{
+  "name": "cloudstatic",
+  "type": "module",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "astro dev",
+    "build": "astro build",
+    "preview": "astro preview",
+    "process:images": "node scripts/process-images.mjs",
+    "generate:manifest": "node scripts/generate-manifest.mjs"
+  },
+  "dependencies": {
+    "@astrojs/mdx": "latest",
+    "@astrojs/react": "latest",
+    "@tailwindcss/vite": "latest",
+    "astro": "latest",
+    "react": "latest",
+    "react-dom": "latest",
+    "sharp": "latest",
+    "tailwindcss": "latest",
+    "wrangler": "latest"
+  },
+  "devDependencies": {}
+}

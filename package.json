@@ -2,6 +2,7 @@
   "name": "cloudstatic",
   "type": "module",
   "version": "0.1.0",
+  "packageManager": "pnpm@10.32.1",
   "private": true,
   "scripts": {
     "dev": "astro dev",

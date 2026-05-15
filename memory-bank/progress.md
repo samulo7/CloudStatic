@@ -1,5 +1,30 @@
 # Progress
 
+## 2026-05-15 — Phase 6 Cloudflare deployment foundation complete
+
+Implemented implementation-plan Phase 6 only. Phase 7 CI workflow was not started.
+
+What changed:
+
+- Added `wrangler.toml` with project name `cloudstatic`.
+- Configured `[assets] directory = "./dist"` for Cloudflare Workers Static Assets.
+- Did not add Worker runtime handlers, SSR, R2, KV, D1, or runtime image optimization.
+- Confirmed existing `pnpm copy:images` stages `content-assets/processed-images/images/` into `dist/images/` after Astro build.
+- Updated `memory-bank/architecture.md` with Wrangler deployment responsibilities and preflight flow.
+
+Verification:
+
+- `pnpm build` passed and generated 6 static pages.
+- `pnpm copy:images` copied processed images to `dist/images/`.
+- `pnpm exec wrangler deploy --dry-run` passed, read 27 files from `dist`, and reported no bindings.
+- Verified `dist/manifest.json`, main image, thumbnail, gallery page, upload page, and article page exist.
+- Production preview served `/`, `/blog/`, `/blog/hello-cloudstatic/`, `/gallery/`, `/upload/`, image URLs, thumbnail URL, and `/manifest.json` with HTTP 200 on port 4323.
+
+Next planned work:
+
+- User should verify Phase 6 browser behavior and deployment config.
+- Do not start Phase 7 CI foundation until user explicitly approves.
+
 ## 2026-05-15 — Phase 5 article image integration complete
 
 Implemented implementation-plan Phase 5 only. Phase 6 was not started.

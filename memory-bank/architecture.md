@@ -12,7 +12,7 @@ CloudStatic follows Build Time Heavy, Runtime Zero.
 
 Phase 2 added the blog content system foundation and a cozy Japanese-style static UI shell. The homepage has since been upgraded into CloudStatic Journal: a poetic static personal-blog landing page with an artistic editorial hero, mood timeline, reading status widget, elegant static article cards, emotional signature quote, ambient footer, floating glass navigation, and CSS-only subtle visual effects. The codebase now has a centralized Astro content collection schema, sample MDX posts, shared navigation/layout, a warm diary-like homepage, timeline-style blog list cards, mood-category tag chips, and calm static article detail routes.
 
-Phase 4 adds image management MVP surfaces while preserving static-first behavior: `/gallery/` reads `public/manifest.json` at build time and renders static image cards; `ImageLinkActions` is a small React island for copying Markdown, HTML, and URL formats only; `/upload/` provides a local preview shell through `UploadPreviewIsland` without network upload, persistence, runtime API, or deployment trigger. Phase 5 adds static article image integration: MDX posts can import `CloudImage`, pass a manifest hash, and render processed images with manifest-backed URLs, thumbnails, dimensions, and lazy loading. Phase 6 Cloudflare deployment has not started.
+Phase 4 adds image management MVP surfaces while preserving static-first behavior: `/gallery/` reads `public/manifest.json` at build time and renders static image cards; `ImageLinkActions` is a small React island for copying Markdown, HTML, and URL formats only; `/upload/` provides a local preview shell through `UploadPreviewIsland` without network upload, persistence, runtime API, or deployment trigger. Phase 5 adds static article image integration: MDX posts can import `CloudImage`, pass a manifest hash, and render processed images with manifest-backed URLs, thumbnails, dimensions, and lazy loading. Phase 6 adds Cloudflare Workers Static Assets deployment foundation through `wrangler.toml`, pointing assets at `./dist` without Worker runtime logic or R2/KV/D1 bindings.
 
 Phase 3 now provides the image-processing foundation: local/CI source images live in `content-assets/incoming-images/`, sharp converts supported images into WebP outputs under `content-assets/processed-images/images/`, thumbnails are generated under `content-assets/processed-images/images/thumb/`, processed metadata is staged in `content-assets/processed-images/manifest-images.json`, and `public/manifest.json` is generated from that metadata. Image binaries remain ignored by git. A separate `copy:images` command copies processed images into `dist/images/` after Astro build.
 
@@ -38,7 +38,18 @@ Current dependency roles:
 - `@astrojs/react`: React islands for future interactive UI only.
 - `tailwindcss` and `@tailwindcss/vite`: global styling pipeline.
 - `sharp`: future build-time image conversion, resizing, metadata extraction.
-- `wrangler`: future Cloudflare Workers Static Assets deployment.
+- `wrangler`: Cloudflare Workers Static Assets deployment CLI.
+
+### `wrangler.toml`
+
+Cloudflare Wrangler deployment configuration.
+
+Current responsibilities:
+
+- Names the Worker project `cloudstatic`.
+- Sets the compatibility date for Wrangler.
+- Configures `[assets] directory = "./dist"` so Cloudflare Workers Static Assets deploys the built static output.
+- Does not configure Worker runtime handlers, R2, KV, D1, or other runtime bindings.
 
 ### `pnpm-lock.yaml`
 
@@ -260,7 +271,21 @@ Future intended flow:
 4. Manifest metadata is generated without embedding image content.
 5. Astro builds pages into `dist/`.
 6. Separate copy step places processed images under `dist/images/` before deployment.
-7. Wrangler deploys `dist/` as Cloudflare Workers Static Assets.
+7. Wrangler deploys `dist/` as Cloudflare Workers Static Assets using `wrangler.toml`.
+
+## Cloudflare deployment foundation
+
+Phase 6 deploy foundation uses `wrangler.toml` with:
+
+```toml
+name = "cloudstatic"
+compatibility_date = "2026-05-15"
+
+[assets]
+directory = "./dist"
+```
+
+This keeps deployment static-only. There is no Worker request handler, SSR adapter, R2 binding, KV binding, D1 binding, or runtime image processing. The deployment preflight is `pnpm build`, `pnpm copy:images`, then `pnpm exec wrangler deploy --dry-run`.
 
 ## Current boundaries
 

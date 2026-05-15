@@ -1,5 +1,31 @@
 # Progress
 
+## 2026-05-15 — Phase 5 article image integration complete
+
+Implemented implementation-plan Phase 5 only. Phase 6 was not started.
+
+What changed:
+
+- Added `src/components/CloudImage.astro` for manifest-backed static article images.
+- `CloudImage` reads `public/manifest.json` at build time and looks up images by hash.
+- `CloudImage` renders main image URL, thumbnail `srcset`, width, height, `loading="lazy"`, `decoding="async"`, and caller-provided alt text.
+- `CloudImage` fails the build if an MDX article references a hash missing from the manifest.
+- Updated `src/content/blog/hello-cloudstatic.mdx` to import `CloudImage` and reference existing hash `85565496ee0bf3ce`.
+- Added minimal article image styling via `.cloud-image`.
+- Updated `memory-bank/architecture.md` with Phase 5 component and content responsibilities.
+
+Verification:
+
+- `pnpm build` passed and generated `/blog/hello-cloudstatic/`.
+- `pnpm copy:images` copied processed images to `dist/images/`.
+- Generated `dist/blog/hello-cloudstatic/index.html` contains `/images/2026/05/85565496ee0bf3ce.webp`.
+- Generated article HTML contains thumbnail `srcset`, `width="800"`, `height="600"`, `loading="lazy"`, and `decoding="async"`.
+
+Next planned work:
+
+- User should verify Phase 5 browser behavior.
+- Do not start Phase 6 Cloudflare deployment foundation until user explicitly approves.
+
 ## 2026-05-15 — Phase 4 image management MVP implemented
 
 Implemented implementation-plan Phase 4 only. Phase 5 was not started.

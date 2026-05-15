@@ -12,7 +12,7 @@ CloudStatic follows Build Time Heavy, Runtime Zero.
 
 Phase 2 added the blog content system foundation and a cozy Japanese-style static UI shell. The homepage has since been upgraded into CloudStatic Journal: a poetic static personal-blog landing page with an artistic editorial hero, mood timeline, reading status widget, elegant static article cards, emotional signature quote, ambient footer, floating glass navigation, and CSS-only subtle visual effects. The codebase now has a centralized Astro content collection schema, sample MDX posts, shared navigation/layout, a warm diary-like homepage, timeline-style blog list cards, mood-category tag chips, and calm static article detail routes.
 
-Phase 4 adds image management MVP surfaces while preserving static-first behavior: `/gallery/` reads `public/manifest.json` at build time and renders static image cards; `ImageLinkActions` is a small React island for copying Markdown, HTML, and URL formats only; `/upload/` provides a local preview shell through `UploadPreviewIsland` without network upload, persistence, runtime API, or deployment trigger. Phase 5 article image integration has not started.
+Phase 4 adds image management MVP surfaces while preserving static-first behavior: `/gallery/` reads `public/manifest.json` at build time and renders static image cards; `ImageLinkActions` is a small React island for copying Markdown, HTML, and URL formats only; `/upload/` provides a local preview shell through `UploadPreviewIsland` without network upload, persistence, runtime API, or deployment trigger. Phase 5 adds static article image integration: MDX posts can import `CloudImage`, pass a manifest hash, and render processed images with manifest-backed URLs, thumbnails, dimensions, and lazy loading. Phase 6 Cloudflare deployment has not started.
 
 Phase 3 now provides the image-processing foundation: local/CI source images live in `content-assets/incoming-images/`, sharp converts supported images into WebP outputs under `content-assets/processed-images/images/`, thumbnails are generated under `content-assets/processed-images/images/thumb/`, processed metadata is staged in `content-assets/processed-images/manifest-images.json`, and `public/manifest.json` is generated from that metadata. Image binaries remain ignored by git. A separate `copy:images` command copies processed images into `dist/images/` after Astro build.
 
@@ -75,6 +75,7 @@ Current responsibilities:
 
 - Stores static article body and frontmatter.
 - Provides Phase 2 sample posts for verifying collection reads, sort order, and article route generation.
+- Can import `CloudImage` for static manifest-backed article image rendering.
 
 ### `src/layouts/BaseLayout.astro`
 
@@ -122,6 +123,17 @@ Current responsibilities:
 - Renders MDX article content and metadata at build time.
 - Provides a static article header, back link, mood-category tag list, and warm readable body container.
 - Uses `BaseLayout` and does not require browser JavaScript for readable article output.
+
+### `src/components/CloudImage.astro`
+
+Static MDX image component for manifest-backed article images.
+
+Current responsibilities:
+
+- Imports `public/manifest.json` at build time.
+- Looks up processed image metadata by `hash` prop.
+- Emits static `<img>` markup with main image URL, thumbnail `srcset`, width, height, lazy loading, async decoding, and caller-provided alt text.
+- Fails the build if an article references a hash missing from the manifest.
 
 ### `src/components/ImageLinkActions.tsx`
 
@@ -172,7 +184,7 @@ Global stylesheet entry.
 Current responsibilities:
 
 - Imports Tailwind CSS.
-- Defines the warm cream/beige visual system, ambient texture backgrounds, floating glass navigation, poetic homepage hero, reading status widget, mood timeline, diary/editorial cards, mood chips, calm article typography, gallery cards, copy controls, upload dropzone, preview cards, and reduced-motion-safe CSS-only effects.
+- Defines the warm cream/beige visual system, ambient texture backgrounds, floating glass navigation, poetic homepage hero, reading status widget, mood timeline, diary/editorial cards, mood chips, calm article typography, manifest-backed article images, gallery cards, copy controls, upload dropzone, preview cards, and reduced-motion-safe CSS-only effects.
 
 Keep global CSS small. Put component-specific styles near components when needed.
 

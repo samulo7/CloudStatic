@@ -1,0 +1,38 @@
+---
+import manifest from '../../public/manifest.json';
+
+interface ManifestImage {
+  hash: string;
+  url: string;
+  thumbnailUrl: string;
+  width: number;
+  height: number;
+}
+
+interface Props {
+  hash: string;
+  alt: string;
+  class?: string;
+}
+
+const { hash, alt, class: className } = Astro.props;
+const image = (manifest.images as ManifestImage[]).find((item) => item.hash === hash);
+
+if (!image) {
+  throw new Error(`CloudImage hash not found in manifest: ${hash}`);
+}
+
+const imageClass = ['cloud-image', className].filter(Boolean).join(' ');
+---
+
+<img
+  class={imageClass}
+  src={image.url}
+  srcset={`${image.thumbnailUrl} 400w, ${image.url} ${image.width}w`}
+  sizes="(max-width: 720px) 100vw, 720px"
+  width={image.width}
+  height={image.height}
+  loading="lazy"
+  decoding="async"
+  alt={alt}
+/>

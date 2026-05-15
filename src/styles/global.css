@@ -443,6 +443,17 @@ time {
   margin: 0 0 22px;
 }
 
+.cloud-image {
+  display: block;
+  width: 100%;
+  height: auto;
+  margin: 30px 0;
+  border: 1px solid rgba(169, 139, 105, 0.24);
+  border-radius: 28px;
+  background: var(--color-soft);
+  box-shadow: var(--shadow-soft);
+}
+
 .article-body a {
   color: var(--color-accent);
   font-weight: 700;

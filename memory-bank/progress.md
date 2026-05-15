@@ -12,10 +12,15 @@ What changed:
 - CI runs `pnpm process:images`, `pnpm generate:manifest`, `pnpm build`, and `pnpm copy:images`.
 - CI verifies `dist/index.html`, `dist/manifest.json`, and `dist/images/` exist.
 - CI uploads `dist/` as the `cloudstatic-dist` artifact for inspection.
+- Added `packageManager` to `package.json` so `pnpm/action-setup` can install pnpm in CI.
+- Updated manifest generation to preserve committed manifest records when CI has no ignored source images.
 - No deploy step, Cloudflare secrets, auto-commit behavior, or Phase 8 checks were added.
 
 Verification:
 
+- `pnpm install --frozen-lockfile` passed locally with pnpm 10.32.1.
+- `pnpm generate:manifest` passed with processed metadata temporarily absent; committed manifest retained 2 images.
+- `pnpm build` passed after manifest-retention test.
 - `pnpm process:images` passed; processed 2 images and skipped unsupported `not-image.txt` with warning.
 - `pnpm generate:manifest` passed; generated `public/manifest.json` with 2 images.
 - `pnpm build` passed and generated 6 static pages.

@@ -8,13 +8,13 @@ const publicDir = path.join(rootDir, 'public');
 const publicManifestPath = path.join(publicDir, 'manifest.json');
 const emptyManifest = { version: 1, images: [] };
 
-async function readProcessedManifest() {
+async function readManifest(filePath) {
   try {
-    const raw = await readFile(processedManifestPath, 'utf8');
+    const raw = await readFile(filePath, 'utf8');
     const parsed = JSON.parse(raw);
 
     if (!Array.isArray(parsed.images)) {
-      throw new Error('Processed manifest must contain an images array.');
+      throw new Error(`${path.relative(rootDir, filePath)} must contain an images array.`);
     }
 
     return parsed;
@@ -27,8 +27,13 @@ async function readProcessedManifest() {
   }
 }
 
-const processedManifest = await readProcessedManifest();
+const existingManifest = await readManifest(publicManifestPath);
+const processedManifest = await readManifest(processedManifestPath);
 const imagesByHash = new Map();
+
+for (const image of existingManifest.images) {
+  imagesByHash.set(image.hash, image);
+}
 
 for (const image of processedManifest.images) {
   imagesByHash.set(image.hash, image);

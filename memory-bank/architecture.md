@@ -239,6 +239,7 @@ Static manifest generator.
 Current responsibilities:
 
 - Reads staged metadata from `content-assets/processed-images/manifest-images.json` when present.
+- Preserves existing committed `public/manifest.json` records when CI has no source images available, then merges processed records by hash.
 - Writes `public/manifest.json` with schema `{ version: 1, images: [...] }`.
 - Deduplicates manifest records by image hash.
 - Emits metadata only: hash, main URL, thumbnail URL, width, height, format, size, and created time.

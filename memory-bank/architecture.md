@@ -12,7 +12,7 @@ CloudStatic follows Build Time Heavy, Runtime Zero.
 
 Phase 2 added the blog content system foundation and a cozy Japanese-style static UI shell. The homepage has since been upgraded into CloudStatic Journal: a poetic static personal-blog landing page with an artistic editorial hero, mood timeline, reading status widget, elegant static article cards, emotional signature quote, ambient footer, floating glass navigation, and CSS-only subtle visual effects. The codebase now has a centralized Astro content collection schema, sample MDX posts, shared navigation/layout, a warm diary-like homepage, timeline-style blog list cards, mood-category tag chips, and calm static article detail routes.
 
-No production image processing exists yet. Current image scripts are placeholders so package commands exist and Step 1 workflows can run without failing.
+Phase 4 adds image management MVP surfaces while preserving static-first behavior: `/gallery/` reads `public/manifest.json` at build time and renders static image cards; `ImageLinkActions` is a small React island for copying Markdown, HTML, and URL formats only; `/upload/` provides a local preview shell through `UploadPreviewIsland` without network upload, persistence, runtime API, or deployment trigger. Phase 5 article image integration has not started.
 
 Phase 3 now provides the image-processing foundation: local/CI source images live in `content-assets/incoming-images/`, sharp converts supported images into WebP outputs under `content-assets/processed-images/images/`, thumbnails are generated under `content-assets/processed-images/images/thumb/`, processed metadata is staged in `content-assets/processed-images/manifest-images.json`, and `public/manifest.json` is generated from that metadata. Image binaries remain ignored by git. A separate `copy:images` command copies processed images into `dist/images/` after Astro build.
 
@@ -84,7 +84,7 @@ Current responsibilities:
 
 - Imports `src/styles/global.css` once for pages using this layout.
 - Emits document metadata from `title` and `description` props.
-- Provides shared static header navigation and page shell.
+- Provides shared static header navigation for Blog, Gallery, and Upload routes.
 - Provides the main content slot for static pages.
 - Does not add client state, theme logic, or runtime API calls.
 
@@ -123,6 +123,48 @@ Current responsibilities:
 - Provides a static article header, back link, mood-category tag list, and warm readable body container.
 - Uses `BaseLayout` and does not require browser JavaScript for readable article output.
 
+### `src/components/ImageLinkActions.tsx`
+
+React island for gallery copy actions.
+
+Current responsibilities:
+
+- Receives static image metadata props from `src/pages/gallery.astro`.
+- Copies Markdown image syntax, HTML image tag text, and plain image URL through browser clipboard APIs.
+- Keeps copy status local to the island and does not fetch runtime data.
+
+### `src/components/UploadPreviewIsland.tsx`
+
+React island for the upload MVP shell.
+
+Current responsibilities:
+
+- Provides drag/drop and file picker image selection.
+- Shows local browser previews for one or more selected image files.
+- Rejects non-image files with a visible error.
+- Does not upload, persist, or call any runtime API.
+
+### `src/pages/gallery.astro`
+
+Static gallery route for `/gallery/`.
+
+Current responsibilities:
+
+- Imports `public/manifest.json` at build time.
+- Renders processed image thumbnails, dimensions, upload date, format, file size, and main URL.
+- Uses `ImageLinkActions` as a React island for copy-only interactivity.
+- Shows an empty state when the manifest has no images.
+
+### `src/pages/upload.astro`
+
+Upload preview route for `/upload/`.
+
+Current responsibilities:
+
+- Explains that selected files are local previews only and publishing requires the CI/build/deploy flow.
+- Mounts `UploadPreviewIsland` for browser-only preview interaction.
+- Does not send files to a server or trigger deployment.
+
 ### `src/styles/global.css`
 
 Global stylesheet entry.
@@ -130,7 +172,7 @@ Global stylesheet entry.
 Current responsibilities:
 
 - Imports Tailwind CSS.
-- Defines the warm cream/beige visual system, ambient texture backgrounds, floating glass navigation, poetic homepage hero, reading status widget, mood timeline, diary/editorial cards, mood chips, calm article typography, and reduced-motion-safe CSS-only effects.
+- Defines the warm cream/beige visual system, ambient texture backgrounds, floating glass navigation, poetic homepage hero, reading status widget, mood timeline, diary/editorial cards, mood chips, calm article typography, gallery cards, copy controls, upload dropzone, preview cards, and reduced-motion-safe CSS-only effects.
 
 Keep global CSS small. Put component-specific styles near components when needed.
 

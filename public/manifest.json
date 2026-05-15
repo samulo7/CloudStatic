@@ -1,4 +1,25 @@
 {
   "version": 1,
-  "images": []
+  "images": [
+    {
+      "hash": "85565496ee0bf3ce",
+      "url": "/images/2026/05/85565496ee0bf3ce.webp",
+      "thumbnailUrl": "/images/thumb/85565496ee0bf3ce_400w.webp",
+      "width": 800,
+      "height": 600,
+      "format": "webp",
+      "size": 946,
+      "createdAt": "2026-05-15T05:24:54.596Z"
+    },
+    {
+      "hash": "ee7b7e011768ebce",
+      "url": "/images/2026/05/ee7b7e011768ebce.webp",
+      "thumbnailUrl": "/images/thumb/ee7b7e011768ebce_400w.webp",
+      "width": 320,
+      "height": 240,
+      "format": "webp",
+      "size": 216,
+      "createdAt": "2026-05-15T05:24:54.596Z"
+    }
+  ]
 }

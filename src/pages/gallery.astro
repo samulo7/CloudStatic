@@ -1,0 +1,84 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import ImageLinkActions from '../components/ImageLinkActions';
+import manifest from '../../public/manifest.json';
+
+interface ManifestImage {
+  hash: string;
+  url: string;
+  thumbnailUrl: string;
+  width: number;
+  height: number;
+  format: string;
+  size: number;
+  createdAt: string;
+}
+
+const title = 'CloudStatic Gallery';
+const description = 'A static image index for processed CloudStatic assets and copy-ready links.';
+const images = (manifest.images as ManifestImage[]).toSorted(
+  (a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime(),
+);
+
+function formatSize(bytes: number) {
+  if (bytes < 1024) return `${bytes} B`;
+  if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(1)} KB`;
+  return `${(bytes / 1024 / 1024).toFixed(1)} MB`;
+}
+
+function formatDate(value: string) {
+  return new Date(value).toLocaleDateString('zh-CN');
+}
+---
+
+<BaseLayout title={title} description={description}>
+  <section class="page-header gallery-header">
+    <p class="eyebrow">Image index</p>
+    <h1>{title}</h1>
+    <p class="lead">Processed WebP assets from the build-time manifest, ready for static posts and edge delivery.</p>
+  </section>
+
+  {
+    images.length === 0 ? (
+      <div class="empty-state">
+        <h2>No processed images yet.</h2>
+        <p>Run the image processing flow, generate manifest metadata, then rebuild to publish gallery cards.</p>
+      </div>
+    ) : (
+      <section class="gallery-grid" aria-label="Processed images">
+        {images.map((image) => (
+          <article class="gallery-card">
+            <a class="gallery-thumb" href={image.url} aria-label={`Open image ${image.hash}`}>
+              <img
+                src={image.thumbnailUrl}
+                alt={`Processed image ${image.hash}`}
+                width="400"
+                height={Math.round((400 / image.width) * image.height)}
+                loading="lazy"
+              />
+            </a>
+            <div class="gallery-card-body">
+              <h2>{image.hash}</h2>
+              <dl class="image-meta">
+                <div>
+                  <dt>Size</dt>
+                  <dd>{image.width} × {image.height}</dd>
+                </div>
+                <div>
+                  <dt>File</dt>
+                  <dd>{formatSize(image.size)} · {image.format.toUpperCase()}</dd>
+                </div>
+                <div>
+                  <dt>Uploaded</dt>
+                  <dd><time datetime={image.createdAt}>{formatDate(image.createdAt)}</time></dd>
+                </div>
+              </dl>
+              <p class="image-url">{image.url}</p>
+              <ImageLinkActions client:load url={image.url} width={image.width} height={image.height} alt={`image ${image.hash}`} />
+            </div>
+          </article>
+        ))}
+      </section>
+    )
+  }
+</BaseLayout>

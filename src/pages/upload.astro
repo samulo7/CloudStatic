@@ -1,0 +1,25 @@
+---
+import UploadPreviewIsland from '../components/UploadPreviewIsland';
+import BaseLayout from '../layouts/BaseLayout.astro';
+
+const title = 'CloudStatic Upload';
+const description = 'Preview local images before sending them through the CloudStatic build-time publishing flow.';
+---
+
+<BaseLayout title={title} description={description}>
+  <section class="page-header upload-header">
+    <p class="eyebrow">Preview shell</p>
+    <h1>{title}</h1>
+    <p class="lead">Choose images locally, review the preview list, then publish through the build-time image pipeline.</p>
+  </section>
+
+  <section class="upload-note" aria-label="Upload publishing note">
+    <h2>Publishing stays build-time.</h2>
+    <p>
+      This MVP shell does not send files anywhere. To make images public, place source files in the incoming image flow,
+      run image processing, generate the manifest, build static pages, and deploy through CI to Cloudflare Workers Static Assets.
+    </p>
+  </section>
+
+  <UploadPreviewIsland client:load />
+</BaseLayout>

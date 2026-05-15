@@ -1,5 +1,34 @@
 # Progress
 
+## 2026-05-15 — Phase 4 image management MVP implemented
+
+Implemented implementation-plan Phase 4 only. Phase 5 was not started.
+
+What changed:
+
+- Added static gallery route at `src/pages/gallery.astro`.
+- Gallery reads `public/manifest.json` at build time and renders image cards or an empty state.
+- Added `src/components/ImageLinkActions.tsx` React island for Markdown, HTML, and URL copy actions.
+- Added upload preview route at `src/pages/upload.astro`.
+- Added `src/components/UploadPreviewIsland.tsx` React island for drag/drop, file picker, multiple previews, removal, and non-image errors.
+- Added Gallery and Upload links to shared navigation.
+- Added focused gallery, copy-control, upload, and preview styles.
+- Updated `memory-bank/architecture.md` with Phase 4 route/component responsibilities.
+
+Verification:
+
+- `pnpm build` passed and generated `/gallery/` plus `/upload/` static routes.
+- `pnpm copy:images` copied processed images to `dist/images/`.
+- Generated `dist/gallery/index.html` shows empty state with current empty manifest.
+- Generated `dist/upload/index.html` includes upload shell, CI/deploy notice, and hydrated preview island markup.
+- Browser interaction checks are pending user verification.
+
+Next planned work:
+
+- Run Phase 4 verification.
+- User should verify Phase 4 test results.
+- Do not start Phase 5 article image integration until user explicitly approves.
+
 ## 2026-05-15 — Phase 3 image-processing foundation complete
 
 Completed implementation-plan Phase 3 only. Phase 4 was not started.

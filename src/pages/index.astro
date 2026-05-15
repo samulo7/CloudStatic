@@ -1,13 +1,94 @@
 ---
+import { getCollection } from 'astro:content';
 import BaseLayout from '../layouts/BaseLayout.astro';
 
-const title = 'CloudStatic';
-const description = 'Image hosting and static blog platform built for Cloudflare Workers Static Assets.';
+const title = 'CloudStatic Journal';
+const description = 'A quiet digital journal for soft images, static writing, and edge-published days.';
+
+const posts = (await getCollection('blog')).sort(
+  (a, b) => b.data.date.getTime() - a.data.date.getTime(),
+);
+const timelinePosts = posts.slice(0, 3);
+const postCountLabel = `${posts.length} quiet ${posts.length === 1 ? 'post' : 'posts'}`;
+
+const entries = [
+  {
+    meta: 'Static ritual',
+    title: 'Build Time Heavy',
+    description: 'Content, image metadata, and quiet structure prepared before the page ever meets a reader.',
+  },
+  {
+    meta: 'Personal archive',
+    title: 'Photo Diary Calm',
+    description: 'A gentle home for small visual memories, future galleries, and long-form notes.',
+  },
+  {
+    meta: 'Zero runtime',
+    title: 'Cloudflare Edge Silence',
+    description: 'Static HTML, CSS, JSON, and images travel fast without server noise or extra storage layers.',
+  },
+];
 ---
 
 <BaseLayout title={title} description={description}>
-  <h1>{title}</h1>
-  <p>{description}</p>
-  <p>Build Time Heavy, Runtime Zero.</p>
-  <p><a href="/blog/">Read the blog</a></p>
+  <section class="journal-hero" aria-label="CloudStatic Journal introduction">
+    <div class="journal-hero-copy">
+      <h1>{title}</h1>
+      <p class="lead">{description}</p>
+      <p class="journal-whisper">Japanese minimalism, paper textures, and a slow publishing ritual for calm internet memories.</p>
+      <div class="hero-actions">
+        <a class="button button-primary" href="/blog/">Read the journal</a>
+      </div>
+    </div>
+
+    <div class="journal-stage" aria-label="Reading status and publishing mood">
+      <div class="status-widget">
+        <span>Currently brewing</span>
+        <strong>{postCountLabel}</strong>
+        <p>100,000 files · 25 MB each · served from Cloudflare Edge.</p>
+      </div>
+      <div class="dream-card">
+        <span class="dream-card-kicker">Photo diary</span>
+        <strong>Upload image → write MDX → brew static pages → publish from the edge</strong>
+        <p>Runtime zero, mood preserved.</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="mood-timeline" aria-label="Journal mood timeline">
+    <div class="section-heading">
+      <p class="eyebrow">Mood timeline</p>
+      <h2>Small rituals for soft publishing.</h2>
+    </div>
+    <div class="mood-track">
+      {timelinePosts.map((post) => (
+        <article class="mood-item">
+          <time class="mood-time" datetime={post.data.date.toISOString()}>
+            {post.data.date.toLocaleDateString('zh-CN', { month: '2-digit', day: '2-digit' })}
+          </time>
+          <h3><a href={`/blog/${post.id}/`}>{post.data.title}</a></h3>
+          <p>{post.data.description}</p>
+        </article>
+      ))}
+    </div>
+  </section>
+
+  <section class="editorial-grid" aria-label="Featured journal principles">
+    {entries.map((entry) => (
+      <article class="editorial-card">
+        <p>{entry.meta}</p>
+        <h2>{entry.title}</h2>
+        <span>{entry.description}</span>
+      </article>
+    ))}
+  </section>
+
+  <figure class="signature-quote">
+    <blockquote>“A quiet digital journal written in a peaceful rainy café.”</blockquote>
+    <figcaption>CloudStatic Journal keeps the web still, warm, and yours.</figcaption>
+  </figure>
+
+  <footer class="ambient-footer" aria-label="CloudStatic platform note">
+    <span>Powered softly by Cloudflare Workers Static Assets.</span>
+  </footer>
 </BaseLayout>

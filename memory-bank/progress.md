@@ -1,5 +1,36 @@
 # Progress
 
+## 2026-05-14 — Phase 2 blog foundation and homepage UI iteration complete
+
+Completed implementation-plan Phase 2 and subsequent homepage visual iterations.
+
+What changed:
+
+- Added Astro blog content collection with MDX posts and centralized schema.
+- Added shared `BaseLayout` with static navigation and metadata props.
+- Added static blog list route at `src/pages/blog/index.astro`.
+- Added static article detail route at `src/pages/blog/[slug].astro`.
+- Redesigned homepage into CloudStatic Journal, a poetic static personal-blog landing page.
+- Added dynamic homepage post count and latest-post mood timeline from the `blog` content collection.
+- Added reading status widget, editorial principle cards, signature quote, ambient footer, floating glass navigation, paper textures, and CSS-only subtle motion.
+- Refined hero spacing to avoid title/card overlap on desktop and stack safely on medium screens.
+- Reduced overuse of handwritten type by keeping body and timeline article text in sans-serif.
+- Kept unfinished gallery/upload navigation hidden.
+
+Verification:
+
+- `pnpm build` passes.
+- Static output generates `/`, `/blog/`, `/blog/hello-cloudstatic/`, and `/blog/build-time-heavy/`.
+- No Phase 3 image-processing logic, runtime API, SSR, R2, KV, D1, client state, or React island was added.
+
+Next planned work:
+
+- User visual verification of current CloudStatic Journal UI.
+- Prioritize blog list and article page styling before deeper homepage polish.
+- Review mobile behavior, especially large heading wraps.
+- Add gallery/upload navigation only after those features exist.
+- Do not start Phase 3 image processing until user explicitly approves moving on.
+
 ## 2026-05-14 — Phase 1 complete
 
 Completed implementation-plan Phase 1: initialized Astro static project baseline.

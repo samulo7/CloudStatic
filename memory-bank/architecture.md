@@ -10,7 +10,7 @@ CloudStatic follows Build Time Heavy, Runtime Zero.
 
 ## Current implementation state
 
-Phase 2 added the blog content system foundation. The codebase now has a centralized Astro content collection schema, sample MDX posts, a shared static layout, a blog list page, and static article detail routes.
+Phase 2 added the blog content system foundation and a cozy Japanese-style static UI shell. The homepage has since been upgraded into CloudStatic Journal: a poetic static personal-blog landing page with an artistic editorial hero, mood timeline, reading status widget, elegant static article cards, emotional signature quote, ambient footer, floating glass navigation, and CSS-only subtle visual effects. The codebase now has a centralized Astro content collection schema, sample MDX posts, shared navigation/layout, a warm diary-like homepage, timeline-style blog list cards, mood-category tag chips, and calm static article detail routes.
 
 No production image processing exists yet. Current image scripts are placeholders so package commands exist and Step 1 workflows can run without failing.
 
@@ -81,6 +81,7 @@ Current responsibilities:
 
 - Imports `src/styles/global.css` once for pages using this layout.
 - Emits document metadata from `title` and `description` props.
+- Provides shared static header navigation and page shell.
 - Provides the main content slot for static pages.
 - Does not add client state, theme logic, or runtime API calls.
 
@@ -90,9 +91,12 @@ Static homepage route for `/`.
 
 Current responsibilities:
 
-- Renders CloudStatic product name and baseline description through `BaseLayout`.
-- Documents visible architecture principle: Build Time Heavy, Runtime Zero.
-- Links to the blog list route for manual navigation.
+- Renders the CloudStatic Journal poetic personal-blog homepage through `BaseLayout`.
+- Reads the `blog` content collection at build time for the homepage post count and latest-post mood timeline.
+- Provides an artistic editorial hero, reading status widget, dynamic mood timeline, visually distinct static principle cards, emotional signature quote, and ambient footer.
+- Documents the static Cloudflare value quietly without exposing internal roadmap status.
+- Links to the blog list route without adding unfinished gallery or upload navigation.
+- Uses CSS-only ambience and subtle motion; no runtime APIs, client state, or React islands are required.
 
 ### `src/pages/blog/index.astro`
 
@@ -102,8 +106,8 @@ Current responsibilities:
 
 - Reads the `blog` content collection at build time.
 - Sorts articles by publish date descending.
-- Renders title, description, date, tags, and article links.
-- Shows an empty state if no articles exist.
+- Renders date, title, description, mood-category tags, and article links in timeline-style static cards.
+- Shows a styled empty state if no articles exist.
 
 ### `src/pages/blog/[slug].astro`
 
@@ -113,6 +117,7 @@ Current responsibilities:
 
 - Uses `getStaticPaths()` to generate one static route per blog entry.
 - Renders MDX article content and metadata at build time.
+- Provides a static article header, back link, mood-category tag list, and warm readable body container.
 - Uses `BaseLayout` and does not require browser JavaScript for readable article output.
 
 ### `src/styles/global.css`
@@ -122,6 +127,7 @@ Global stylesheet entry.
 Current responsibilities:
 
 - Imports Tailwind CSS.
+- Defines the warm cream/beige visual system, ambient texture backgrounds, floating glass navigation, poetic homepage hero, reading status widget, mood timeline, diary/editorial cards, mood chips, calm article typography, and reduced-motion-safe CSS-only effects.
 
 Keep global CSS small. Put component-specific styles near components when needed.
 

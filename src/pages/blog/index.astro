@@ -2,35 +2,43 @@
 import { getCollection } from 'astro:content';
 import BaseLayout from '../../layouts/BaseLayout.astro';
 
-const title = 'CloudStatic Blog';
-const description = 'Static blog articles rendered at build time.';
+const title = 'CloudStatic Journal';
+const description = 'A calm timeline of static notes, image rituals, and edge-published writing.';
 const posts = (await getCollection('blog')).sort(
   (a, b) => b.data.date.getTime() - a.data.date.getTime(),
 );
 ---
 
 <BaseLayout title={title} description={description}>
-  <h1>{title}</h1>
-  <p>{description}</p>
+  <section class="page-header">
+    <p class="eyebrow">Mood timeline</p>
+    <h1>{title}</h1>
+    <p class="lead">{description}</p>
+  </section>
 
   {
     posts.length === 0 ? (
-      <p>No posts yet.</p>
+      <div class="empty-state">
+        <h2>No posts yet.</h2>
+        <p>Add MDX files under src/content/blog to publish static articles.</p>
+      </div>
     ) : (
-      <ul>
+      <section class="post-grid" aria-label="Blog posts">
         {posts.map((post) => (
-          <li>
-            <article>
+          <article class="post-card">
+            <div class="post-card-meta">
+              <time datetime={post.data.date.toISOString()}>{post.data.date.toLocaleDateString('zh-CN')}</time>
+            </div>
+            <div class="post-card-body">
               <h2><a href={`/blog/${post.id}/`}>{post.data.title}</a></h2>
               <p>{post.data.description}</p>
-              <time datetime={post.data.date.toISOString()}>{post.data.date.toLocaleDateString('zh-CN')}</time>
-              <ul>
+              <ul class="tag-list" aria-label="Mood categories">
                 {post.data.tags.map((tag) => <li>{tag}</li>)}
               </ul>
-            </article>
-          </li>
+            </div>
+          </article>
         ))}
-      </ul>
+      </section>
     )
   }
 </BaseLayout>

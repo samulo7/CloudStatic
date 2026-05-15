@@ -17,8 +17,20 @@ const { title, description } = Astro.props;
     <title>{title}</title>
   </head>
   <body>
-    <main>
-      <slot />
-    </main>
+    <div class="site-shell">
+      <header class="site-header">
+        <a class="brand" href="/" aria-label="CloudStatic home">
+          <span class="brand-mark">CS</span>
+          <span>CloudStatic</span>
+        </a>
+        <nav class="site-nav" aria-label="Primary navigation">
+          <a href="/blog/">Blog</a>
+        </nav>
+      </header>
+
+      <main>
+        <slot />
+      </main>
+    </div>
   </body>
 </html>

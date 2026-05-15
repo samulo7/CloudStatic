@@ -8,7 +8,8 @@
     "build": "astro build",
     "preview": "astro preview",
     "process:images": "node scripts/process-images.mjs",
-    "generate:manifest": "node scripts/generate-manifest.mjs"
+    "generate:manifest": "node scripts/generate-manifest.mjs",
+    "copy:images": "node scripts/copy-processed-images.mjs"
   },
   "dependencies": {
     "@astrojs/mdx": "latest",

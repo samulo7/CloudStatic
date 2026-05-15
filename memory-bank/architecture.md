@@ -14,6 +14,8 @@ Phase 2 added the blog content system foundation and a cozy Japanese-style stati
 
 No production image processing exists yet. Current image scripts are placeholders so package commands exist and Step 1 workflows can run without failing.
 
+Phase 3 now provides the image-processing foundation: local/CI source images live in `content-assets/incoming-images/`, sharp converts supported images into WebP outputs under `content-assets/processed-images/images/`, thumbnails are generated under `content-assets/processed-images/images/thumb/`, processed metadata is staged in `content-assets/processed-images/manifest-images.json`, and `public/manifest.json` is generated from that metadata. Image binaries remain ignored by git. A separate `copy:images` command copies processed images into `dist/images/` after Astro build.
+
 ## File and directory responsibilities
 
 ### `package.json`
@@ -25,8 +27,9 @@ Current scripts:
 - `dev`: starts Astro dev server.
 - `build`: builds static site into `dist/`.
 - `preview`: previews built static output.
-- `process:images`: reserved for build-time image processing.
-- `generate:manifest`: generates image manifest JSON.
+- `process:images`: processes source images from `content-assets/incoming-images/` into WebP main images, 400w thumbnails, and staged metadata.
+- `generate:manifest`: generates `public/manifest.json` from processed image metadata.
+- `copy:images`: copies processed image assets into `dist/images/` after Astro build.
 
 Current dependency roles:
 
@@ -137,36 +140,39 @@ Astro TypeScript environment declarations. Generated/managed as standard Astro p
 
 ### `scripts/process-images.mjs`
 
-Placeholder for future build-time image processing.
+Build-time image processor.
 
 Current responsibilities:
 
-- Checks whether `content-assets/incoming-images/` exists.
-- Prints a clear no-op message.
-- Does not process files yet.
-
-Future Phase 3 responsibilities:
-
-- Read source images from `content-assets/incoming-images/`.
-- Compute SHA-256 hash and use first 16 characters for output file names.
-- Generate WebP main images and 400w thumbnails via sharp.
-- Write processed outputs under `content-assets/processed-images/images/`.
-- Avoid using `public/images/` as long-term image storage.
+- Ensures `content-assets/incoming-images/`, `content-assets/processed-images/images/`, and `content-assets/processed-images/images/thumb/` exist.
+- Recursively reads PNG, JPG, and JPEG source files from `content-assets/incoming-images/`.
+- Computes SHA-256 from source image bytes and uses the first 16 characters as the stable public file name.
+- Writes WebP main images to `content-assets/processed-images/images/[year]/[month]/[hash].webp`.
+- Writes thumbnails to `content-assets/processed-images/images/thumb/[hash]_400w.webp`.
+- Uses sharp at build time only; no runtime image conversion exists.
+- Generates staged metadata at `content-assets/processed-images/manifest-images.json`.
+- Deduplicates records by hash and skips unsupported file types with a clear warning.
 
 ### `scripts/generate-manifest.mjs`
 
-Placeholder manifest generator.
+Static manifest generator.
 
 Current responsibilities:
 
-- Ensures `public/` exists.
-- Writes empty `public/manifest.json` with schema `{ version: 1, images: [] }`.
+- Reads staged metadata from `content-assets/processed-images/manifest-images.json` when present.
+- Writes `public/manifest.json` with schema `{ version: 1, images: [...] }`.
+- Deduplicates manifest records by image hash.
+- Emits metadata only: hash, main URL, thumbnail URL, width, height, format, size, and created time.
+- Writes an empty manifest if no processed metadata exists.
 
-Future Phase 3 responsibilities:
+### `scripts/copy-processed-images.mjs`
 
-- Generate metadata for processed images.
-- Keep manifest JSON valid and deduplicated by image hash.
-- Record hash, main URL, thumbnail URL, width, height, format, size, and created time.
+Deployment asset staging script.
+
+Current responsibilities:
+
+- Copies `content-assets/processed-images/images/` into `dist/images/` after Astro build.
+- Keeps processed image deployment separate from Astro `public/images/` long-term storage.
 
 ### `public/manifest.json`
 
@@ -174,9 +180,9 @@ Generated static image manifest consumed by future gallery and image components.
 
 Current responsibilities:
 
-- Stores empty image list for baseline build.
-
-This file may be committed because it contains metadata only, not image binaries.
+- Stores image metadata for static pages and future gallery/image components.
+- Uses schema `{ version: 1, images: [{ hash, url, thumbnailUrl, width, height, format, size, createdAt }] }`.
+- May be committed because it contains metadata only, not image binaries.
 
 ### `memory-bank/`
 

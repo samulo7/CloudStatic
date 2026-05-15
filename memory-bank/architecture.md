@@ -12,7 +12,7 @@ CloudStatic follows Build Time Heavy, Runtime Zero.
 
 Phase 2 added the blog content system foundation and a cozy Japanese-style static UI shell. The homepage has since been upgraded into CloudStatic Journal: a poetic static personal-blog landing page with an artistic editorial hero, mood timeline, reading status widget, elegant static article cards, emotional signature quote, ambient footer, floating glass navigation, and CSS-only subtle visual effects. The codebase now has a centralized Astro content collection schema, sample MDX posts, shared navigation/layout, a warm diary-like homepage, timeline-style blog list cards, mood-category tag chips, and calm static article detail routes.
 
-Phase 4 adds image management MVP surfaces while preserving static-first behavior: `/gallery/` reads `public/manifest.json` at build time and renders static image cards; `ImageLinkActions` is a small React island for copying Markdown, HTML, and URL formats only; `/upload/` provides a local preview shell through `UploadPreviewIsland` without network upload, persistence, runtime API, or deployment trigger. Phase 5 adds static article image integration: MDX posts can import `CloudImage`, pass a manifest hash, and render processed images with manifest-backed URLs, thumbnails, dimensions, and lazy loading. Phase 6 adds Cloudflare Workers Static Assets deployment foundation through `wrangler.toml`, pointing assets at `./dist` without Worker runtime logic or R2/KV/D1 bindings.
+Phase 4 adds image management MVP surfaces while preserving static-first behavior: `/gallery/` reads `public/manifest.json` at build time and renders static image cards; `ImageLinkActions` is a small React island for copying Markdown, HTML, and URL formats only; `/upload/` provides a local preview shell through `UploadPreviewIsland` without network upload, persistence, runtime API, or deployment trigger. Phase 5 adds static article image integration: MDX posts can import `CloudImage`, pass a manifest hash, and render processed images with manifest-backed URLs, thumbnails, dimensions, and lazy loading. Phase 6 adds Cloudflare Workers Static Assets deployment foundation through `wrangler.toml`, pointing assets at `./dist` without Worker runtime logic or R2/KV/D1 bindings. Phase 7.1 adds a GitHub Actions build workflow that validates dependency installation, image processing, manifest generation, Astro build, processed image copying, and artifact upload without deploying or committing generated files.
 
 Phase 3 now provides the image-processing foundation: local/CI source images live in `content-assets/incoming-images/`, sharp converts supported images into WebP outputs under `content-assets/processed-images/images/`, thumbnails are generated under `content-assets/processed-images/images/thumb/`, processed metadata is staged in `content-assets/processed-images/manifest-images.json`, and `public/manifest.json` is generated from that metadata. Image binaries remain ignored by git. A separate `copy:images` command copies processed images into `dist/images/` after Astro build.
 
@@ -50,6 +50,20 @@ Current responsibilities:
 - Sets the compatibility date for Wrangler.
 - Configures `[assets] directory = "./dist"` so Cloudflare Workers Static Assets deploys the built static output.
 - Does not configure Worker runtime handlers, R2, KV, D1, or other runtime bindings.
+
+### `.github/workflows/ci.yml`
+
+GitHub Actions CI build workflow for Phase 7.1.
+
+Current responsibilities:
+
+- Runs on `push` and `pull_request`.
+- Uses pnpm and Node.js 22 on `ubuntu-latest`.
+- Installs dependencies with `pnpm install --frozen-lockfile`.
+- Runs `pnpm process:images`, `pnpm generate:manifest`, `pnpm build`, and `pnpm copy:images` in that order.
+- Verifies `dist/index.html`, `dist/manifest.json`, and `dist/images/` exist.
+- Uploads `dist/` as the `cloudstatic-dist` artifact.
+- Does not deploy, configure Cloudflare secrets, or commit generated files.
 
 ### `pnpm-lock.yaml`
 
@@ -272,6 +286,17 @@ Future intended flow:
 5. Astro builds pages into `dist/`.
 6. Separate copy step places processed images under `dist/images/` before deployment.
 7. Wrangler deploys `dist/` as Cloudflare Workers Static Assets using `wrangler.toml`.
+
+## CI build workflow
+
+Phase 7.1 adds `.github/workflows/ci.yml` for build verification only. The workflow runs on `push` and `pull_request`, installs with `pnpm install --frozen-lockfile`, then runs:
+
+1. `pnpm process:images`
+2. `pnpm generate:manifest`
+3. `pnpm build`
+4. `pnpm copy:images`
+
+It checks for `dist/index.html`, `dist/manifest.json`, and `dist/images/`, then uploads `dist/` as `cloudstatic-dist`. It intentionally does not run Wrangler deploy, use Cloudflare secrets, or commit generated files.
 
 ## Cloudflare deployment foundation
 

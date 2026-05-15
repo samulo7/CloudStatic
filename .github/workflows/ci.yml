@@ -1,0 +1,49 @@
+name: CI
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Process images
+        run: pnpm process:images
+
+      - name: Generate manifest
+        run: pnpm generate:manifest
+
+      - name: Build static site
+        run: pnpm build
+
+      - name: Copy processed images
+        run: pnpm copy:images
+
+      - name: Verify build artifact
+        run: |
+          test -f dist/index.html
+          test -f dist/manifest.json
+          test -d dist/images
+
+      - name: Upload static artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: cloudstatic-dist
+          path: dist/

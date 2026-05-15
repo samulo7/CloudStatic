@@ -1,5 +1,34 @@
 # Progress
 
+## 2026-05-15 — Phase 7.1 CI build workflow implemented
+
+Implemented implementation-plan Phase 7.1 only. Phase 7.2 deploy and Phase 8 quality checks were not started.
+
+What changed:
+
+- Added `.github/workflows/ci.yml` for GitHub Actions build verification.
+- Workflow runs on `push` and `pull_request`.
+- CI installs dependencies with `pnpm install --frozen-lockfile`.
+- CI runs `pnpm process:images`, `pnpm generate:manifest`, `pnpm build`, and `pnpm copy:images`.
+- CI verifies `dist/index.html`, `dist/manifest.json`, and `dist/images/` exist.
+- CI uploads `dist/` as the `cloudstatic-dist` artifact for inspection.
+- No deploy step, Cloudflare secrets, auto-commit behavior, or Phase 8 checks were added.
+
+Verification:
+
+- `pnpm process:images` passed; processed 2 images and skipped unsupported `not-image.txt` with warning.
+- `pnpm generate:manifest` passed; generated `public/manifest.json` with 2 images.
+- `pnpm build` passed and generated 6 static pages.
+- `pnpm copy:images` passed; copied processed images to `dist/images/`.
+- Local artifact checks passed for `dist/index.html`, `dist/manifest.json`, and `dist/images/`.
+- GitHub Actions verification requires push or pull request after user review.
+
+Next planned work:
+
+- Run local Phase 7.1 verification commands.
+- User should verify Phase 7.1 test results and CI behavior.
+- Do not start Phase 7.2 deploy or Phase 8 checks until user explicitly approves.
+
 ## 2026-05-15 — Phase 6 Cloudflare deployment foundation complete
 
 Implemented implementation-plan Phase 6 only. Phase 7 CI workflow was not started.

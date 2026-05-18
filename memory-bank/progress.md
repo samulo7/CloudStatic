@@ -1,5 +1,53 @@
 # Progress
 
+## 2026-05-18 — Phase 7.2 gated deploy workflow implemented
+
+Implemented implementation-plan Phase 7.2 only. Phase 8 quality checks were not started.
+
+What changed:
+
+- Added a Wrangler deploy step to `.github/workflows/ci.yml` after build artifact upload.
+- Deploy runs only for `push` events on `refs/heads/master`.
+- Pull requests and non-master branches still build, verify artifacts, and upload `cloudstatic-dist`, but skip deployment.
+- Deploy uses GitHub Secrets `CLOUDFLARE_API_TOKEN` and `CLOUDFLARE_ACCOUNT_ID` through environment variables.
+- Updated `memory-bank/architecture.md` with Phase 7.2 CI deploy behavior, secret requirements, and branch gating.
+- No formatter, type checker, test tooling, R2, KV, D1, SSR, Worker runtime handler, or runtime image optimization was added.
+
+Verification:
+
+- `pnpm install --frozen-lockfile` passed locally with pnpm 10.32.1.
+- `pnpm process:images` passed; processed 2 images and skipped unsupported `not-image.txt` with warning.
+- `pnpm generate:manifest` passed; generated `public/manifest.json` with 2 images.
+- `pnpm build` passed and generated 6 static pages.
+- `pnpm copy:images` passed; copied processed images to `dist/images/`.
+- Local artifact checks passed for `dist/index.html`, `dist/manifest.json`, and `dist/images/`.
+- `pnpm exec wrangler deploy --dry-run` passed; read 27 files from `dist`, reported no bindings, and did not publish.
+
+Next planned work:
+
+- User should configure GitHub Secrets `CLOUDFLARE_API_TOKEN` and `CLOUDFLARE_ACCOUNT_ID` before expecting master deploy to succeed.
+- User should verify GitHub Actions behavior: PR/non-master builds skip deploy; master push deploys after build.
+- Do not start Phase 8 checks until user explicitly verifies Phase 7.2 and approves Phase 8.
+
+## 2026-05-18 — Phase 7.1 local verification re-run
+
+Re-ran Phase 7.1 local verification only. Phase 7.2 deploy and Phase 8 quality checks were not started.
+
+Verification:
+
+- `pnpm install --frozen-lockfile` passed locally with pnpm 10.32.1.
+- `pnpm process:images` passed; processed 2 images and skipped unsupported `not-image.txt` with warning.
+- `pnpm generate:manifest` passed; generated `public/manifest.json` with 2 images.
+- `pnpm build` passed and generated 6 static pages.
+- `pnpm copy:images` passed; copied processed images to `dist/images/`.
+- Local artifact checks passed for `dist/index.html`, `dist/manifest.json`, and `dist/images/`.
+- Git status/diff were clean before updating this progress entry.
+
+Next planned work:
+
+- User should verify Phase 7.1 CI behavior by pushing or opening a pull request when ready.
+- Do not start Phase 7.2 deploy or Phase 8 checks until user explicitly approves.
+
 ## 2026-05-15 — Phase 7.1 CI build workflow implemented
 
 Implemented implementation-plan Phase 7.1 only. Phase 7.2 deploy and Phase 8 quality checks were not started.

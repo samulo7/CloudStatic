@@ -1,5 +1,34 @@
 # Progress
 
+## 2026-05-18 — Phase 7.2 hosted deploy verified; custom domain troubleshooting ongoing
+
+Phase 7.2 remote verification succeeded. Phase 8 quality checks were not started.
+
+What changed after local Phase 7.2 implementation:
+
+- Created commit `cfdb487` (`Add gated Cloudflare deploy workflow`) and pushed it to `origin/master`.
+- GitHub Actions `CI` workflow ran on `master` and succeeded, including `Deploy to Cloudflare Workers Static Assets`.
+- Cloudflare dashboard showed Worker project `cloudstatic` with workers.dev domain `cloudstatic.catherine.workers.dev` and no bindings, matching the static-only MVP target.
+- `https://cloudstatic.catherine.workers.dev/` returned the CloudStatic Astro homepage, confirming the deployed Static Assets output is correct.
+
+Custom domain investigation:
+
+- User added custom domain `cloudstatic.775774.xyz` to the `cloudstatic` Worker.
+- Cloudflare DNS shows an auto-managed, read-only Worker record: `cloudstatic.775774.xyz` -> `cloudstatic`.
+- Public DNS resolves `cloudstatic.775774.xyz` to Cloudflare edge IPs.
+- Requests to `https://cloudstatic.775774.xyz/` still return Docker registry proxy JSON, not the CloudStatic homepage.
+- Cache-busted requests and paths such as `/blog/` and `/manifest.json` also return the same Docker registry proxy JSON, so this is not a browser cache issue.
+- `/cdn-cgi/trace` confirms requests enter Cloudflare for host `cloudstatic.775774.xyz`.
+- Removing the previous wildcard DNS entry did not fix the custom domain behavior.
+- Current suspected issue is Cloudflare custom-domain/Worker binding state or a residual service mapping for this hostname, not the Astro build or Workers Static Assets deployment itself.
+
+Next planned work:
+
+- Do not start Phase 8 until the user explicitly approves it after custom-domain verification.
+- Test a fresh hostname such as `cs.775774.xyz` or `blog.775774.xyz` as a new custom domain for the `cloudstatic` Worker.
+- If the fresh hostname works, treat `cloudstatic.775774.xyz` as stale/residual and either abandon it or re-add it later.
+- If the fresh hostname also returns Docker proxy JSON, re-run the GitHub Actions deployment or inspect Cloudflare Workers & Pages for residual Docker proxy service mappings.
+
 ## 2026-05-18 — Phase 7.2 gated deploy workflow implemented
 
 Implemented implementation-plan Phase 7.2 only. Phase 8 quality checks were not started.
